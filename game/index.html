@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLARA KEYS — 3D Open-World Action</title>
+  <link rel="stylesheet" href="./styles/hud.css">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.min.js"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- 3D WebGL Canvas Container -->
+  <div id="canvas-container"></div>
+
+  <!-- HUD Layer -->
+  <div id="hud-layer">
+    <!-- Top Right -->
+    <div class="hud-top-right">
+      <div class="hud-cash" id="hud-cash">$18,450</div>
+      <div class="hud-wanted">
+        <span class="wanted-star">★</span>
+        <span class="wanted-star">★</span>
+        <span class="wanted-star">★</span>
+        <span class="wanted-star">★</span>
+        <span class="wanted-star">★</span>
+      </div>
+      <div class="hud-district-badge">
+        <div class="hud-district-title" id="hud-district">NEON PROMENADE</div>
+      </div>
+    </div>
+
+    <!-- Top Center Mission Banner -->
+    <div class="hud-mission-banner" id="hud-mission-banner">
+      <h3 id="hud-mission-title">KEYS TO THE COAST</h3>
+      <p id="hud-mission-obj">Steal the Super GT on Ocean Drive</p>
+    </div>
+
+    <!-- Bottom Left: Minimap & Vitals -->
+    <div class="hud-bottom-left">
+      <div class="minimap-wrapper">
+        <canvas id="minimap-canvas" width="160" height="160"></canvas>
+      </div>
+      <div class="hud-vitals">
+        <div class="vital-bar"><div id="hud-health-fill" style="width: 100%;"></div></div>
+        <div class="vital-bar"><div id="hud-armor-fill" style="width: 100%;"></div></div>
+        <div class="vital-bar"><div id="hud-nitro-fill" style="width: 100%;"></div></div>
+      </div>
+    </div>
+
+    <!-- Bottom Center: Speedometer & Radio -->
+    <div class="hud-bottom-center">
+      <div class="hud-speedometer hidden" id="hud-speedometer">
+        <span class="hud-speed-val" id="hud-speed-val">0</span>
+        <span class="hud-speed-unit">MPH</span>
+      </div>
+      <div class="hud-radio-toast" id="hud-radio-toast">Solara Synth FM • Outrun / Retrowave</div>
+    </div>
+
+    <!-- Bottom Right: Weapon & Ammo -->
+    <div class="hud-bottom-right">
+      <div class="hud-weapon-name" id="hud-weapon-name">9MM COASTAL</div>
+      <div class="hud-ammo" id="hud-ammo">12 / 96</div>
+    </div>
+
+    <!-- Comms Dialogue Subtitles -->
+    <div class="hud-dialogue hidden" id="hud-dialogue">
+      <div class="dialogue-speaker" id="hud-dialogue-speaker">Elena Vance</div>
+      <div class="dialogue-text" id="hud-dialogue-text">Welcome back to Solara, Mateo.</div>
+    </div>
+
+    <!-- Context Interaction Prompt -->
+    <div class="hud-context-prompt hidden" id="hud-context-prompt">[E] ENTER VEHICLE</div>
+  </div>
+
+  <!-- Interactive World Map Modal (M) -->
+  <div class="modal-overlay hidden" id="world-map-modal">
+    <div class="world-map-modal">
+      <div class="world-map-header">
+        <h2>SOLARA KEYS ARCHIPELAGO — TACTICAL MAP</h2>
+        <button class="close-btn" id="map-close-btn">✕</button>
+      </div>
+      <div class="world-map-body">
+        <div class="map-sidebar">
+          <h3 style="color: #38bdf8; margin-bottom: 8px; font-size: 13px; letter-spacing: 1px;">6 DISTRICTS</h3>
+          <ul style="list-style: none; font-size: 11px; line-height: 1.6; color: #cbd5e1; margin-bottom: 14px;">
+            <li><span style="color: #ec4899;">■</span> Neon Promenade (Beachfront)</li>
+            <li><span style="color: #06b6d4;">■</span> Downtown Spire (Financial Core)</li>
+            <li><span style="color: #f59e0b;">■</span> Puerto Solara (Harbor & Docks)</li>
+            <li><span style="color: #10b981;">■</span> Palma Heights (Hillside Villas)</li>
+            <li><span style="color: #ef4444;">■</span> Cayo Industrial (Chop-Shop)</li>
+            <li><span style="color: #8b5cf6;">■</span> Coral Causeway (Twin Bridges)</li>
+          </ul>
+
+          <h3 style="color: #ec4899; margin-bottom: 6px; font-size: 13px; letter-spacing: 1px;">CAMPAIGN PROGRESS</h3>
+          <ol style="font-size: 10px; line-height: 1.6; color: #94a3b8; padding-left: 14px; margin-bottom: 12px;">
+            <li style="color: #22c55e;">✓ Keys to the Coast</li>
+            <li style="color: #22c55e;">✓ Marina Repo</li>
+            <li style="color: #22c55e;">✓ Neon Shakedown</li>
+            <li style="color: #22c55e;">✓ Causeway Heat</li>
+            <li style="color: #22c55e;">✓ Dockside Ambush</li>
+            <li style="color: #22c55e;">✓ Villa Infiltration</li>
+            <li style="color: #22c55e;">✓ Airspace Lockdown</li>
+            <li style="color: #22c55e;">✓ Armored Convoy</li>
+            <li style="color: #f59e0b; font-weight: bold;">➤ 9. The Solara Vault (Active)</li>
+            <li>10. Golden Hour Escape</li>
+          </ol>
+
+          <div style="background: rgba(15,23,42,0.8); border: 1px solid rgba(56,189,248,0.3); border-radius: 4px; padding: 6px 10px; font-size: 10px; color: #94a3b8;">
+            <div style="color: #38bdf8; font-weight: bold; margin-bottom: 2px;">DOSSIER STATUS</div>
+            <div>Save Slot 1: Downtown Spire</div>
+            <div>Cash: $45,000 • Wanted: ★★★</div>
+          </div>
+        </div>
+        <div class="map-canvas-container">
+          <canvas id="world-map-canvas" width="760" height="380"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop & Garage Modal -->
+  <div class="modal-overlay hidden" id="shop-garage-modal">
+    <div class="start-screen-card" style="max-width: 680px; text-align: left;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="color: #06b6d4; font-size: 20px;">CRUZ CUSTOMS & SUPPLY</h2>
+        <button class="close-btn" id="shop-close-btn">✕</button>
+      </div>
+      <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+        <button class="btn-preset-launch" id="tab-btn-weapons">WEAPONS & ARMOR</button>
+        <button class="btn-preset-launch" id="tab-btn-garage">VEHICLE GARAGE</button>
+        <button class="btn-preset-launch" id="tab-btn-savehouse">SAFEHOUSE SAVE/LOAD</button>
+      </div>
+      <div id="shop-tab-content"></div>
+    </div>
+  </div>
+
+  <!-- Controls Guide Modal -->
+  <div class="modal-overlay hidden" id="controls-modal">
+    <div class="start-screen-card" style="text-align: left; max-width: 600px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+        <h2 style="color: #38bdf8;">SOLARA CONTROLS GUIDE</h2>
+        <button class="close-btn" id="controls-close-btn">✕</button>
+      </div>
+      <div style="font-size: 13px; line-height: 1.8; color: #cbd5e1;">
+        <p><strong>On Foot:</strong> WASD move • Shift sprint • Space jump • Mouse aim • Left Click fire • R reload • 1–5 select weapon • E or F enter/steal vehicle</p>
+        <p><strong>Driving:</strong> W/S accelerate/brake • A/D steer • Space handbrake drift • Shift nitro boost • E or F exit vehicle • Q switch radio station • C cycle camera</p>
+        <p><strong>Navigation & Menus:</strong> M toggle Full World Map • Esc Pause & Save • T cycle Time-of-Day</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pause Menu -->
+  <div class="modal-overlay hidden" id="pause-menu">
+    <div class="start-screen-card">
+      <h2 style="font-size: 28px; margin-bottom: 20px; color: #f8fafc;">SOLARA KEYS PAUSED</h2>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <button class="btn-primary" id="btn-resume">RESUME GAME</button>
+        <button class="btn-preset-launch" id="btn-controls">CONTROLS GUIDE</button>
+        <button class="btn-preset-launch" id="btn-time-cycle">CYCLE TIME-OF-DAY (T)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start Screen -->
+  <div class="modal-overlay" id="start-screen">
+    <div class="start-screen-card">
+      <div class="logo-main">SOLARA KEYS</div>
+      <div class="logo-sub">TROPICAL OPEN-WORLD CRIME METROPOLIS</div>
+      <button class="btn-primary" id="btn-start-game">ENTER SOLARA KEYS</button>
+
+      <div style="margin-top: 28px;">
+        <p style="font-size: 11px; color: #94a3b8; letter-spacing: 1px; margin-bottom: 8px;">SHOWCASE LIVE PRESETS (1280×480 HD)</p>
+        <div class="preset-selector">
+          <button class="btn-preset-launch" data-preset="cover">01: COVER DRIVE</button>
+          <button class="btn-preset-launch" data-preset="chase">02: POLICE CHASE</button>
+          <button class="btn-preset-launch" data-preset="combat">03: ON-FOOT COMBAT</button>
+          <button class="btn-preset-launch" data-preset="map">04: WORLD MAP</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Bootstrap Script -->
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>

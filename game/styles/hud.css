@@ -1,0 +1,460 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+body {
+  background-color: #090d16;
+  color: #f8fafc;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+}
+
+#canvas-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Common Hidden Utility */
+.hidden {
+  display: none !important;
+}
+
+/* ---------------- HUD OVERLAY ---------------- */
+#hud-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Top Right: Cash, Wanted Stars & District */
+.hud-top-right {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+.hud-cash {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #10b981;
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+}
+
+.hud-wanted {
+  display: flex;
+  gap: 5px;
+}
+
+.wanted-star {
+  font-size: 24px;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.wanted-star.active {
+  color: #f59e0b;
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+}
+
+.wanted-star.flash {
+  color: #ef4444;
+  text-shadow: 0 0 16px rgba(239, 68, 68, 1.0);
+}
+
+.hud-district-badge {
+  text-align: right;
+  margin-top: 4px;
+}
+
+.hud-district-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+/* Top Center: Active Mission Banner */
+.hud-mission-banner {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(236, 72, 153, 0.6);
+  backdrop-filter: blur(8px);
+  padding: 8px 24px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(236, 72, 153, 0.25);
+}
+
+.hud-mission-banner h3 {
+  font-size: 13px;
+  letter-spacing: 2px;
+  color: #ec4899;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.hud-mission-banner p {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+/* Bottom Left: Minimap & Vitals Bars */
+.hud-bottom-left {
+  position: absolute;
+  bottom: 24px;
+  left: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.minimap-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.9), 0 0 0 3px rgba(56, 189, 248, 0.7);
+  background: #091524;
+}
+
+#minimap-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.hud-vitals {
+  width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vital-bar {
+  height: 7px;
+  background: rgba(15, 23, 42, 0.8);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+#hud-health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #22c55e);
+  transition: width 0.15s ease;
+}
+
+#hud-armor-fill {
+  height: 100%;
+  background: #38bdf8;
+  transition: width 0.15s ease;
+}
+
+#hud-nitro-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #06b6d4, #ec4899);
+  transition: width 0.1s ease;
+}
+
+/* Bottom Right: Weapon & Ammo */
+.hud-bottom-right {
+  position: absolute;
+  bottom: 24px;
+  right: 28px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 10px 18px;
+  border-radius: 6px;
+  text-align: right;
+  min-width: 140px;
+}
+
+.hud-weapon-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.hud-ammo {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+/* Bottom Center: Speedometer & Radio Toast */
+.hud-bottom-center {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hud-speedometer {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  backdrop-filter: blur(8px);
+  padding: 6px 20px;
+  border-radius: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.hud-speed-val {
+  font-size: 30px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+.hud-speed-unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.hud-radio-toast {
+  font-size: 12px;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: rgba(15, 23, 42, 0.65);
+  padding: 4px 14px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* Center Bottom: Comms Subtitles */
+.hud-dialogue {
+  position: absolute;
+  bottom: 95px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  border-left: 4px solid #ec4899;
+  backdrop-filter: blur(8px);
+  padding: 8px 20px;
+  border-radius: 4px;
+  max-width: 650px;
+  text-align: center;
+}
+
+.dialogue-speaker {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ec4899;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.dialogue-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f8fafc;
+}
+
+/* Context Prompt */
+.hud-context-prompt {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid #38bdf8;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #38bdf8;
+  letter-spacing: 1px;
+  animation: pulsePrompt 1.2s infinite alternate;
+}
+
+@keyframes pulsePrompt {
+  0% { transform: translate(-50%, -50%) scale(1.0); }
+  100% { transform: translate(-50%, -50%) scale(1.06); }
+}
+
+/* ---------------- MODALS & OVERLAYS ---------------- */
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(9, 13, 22, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Start Screen */
+.start-screen-card {
+  text-align: center;
+  max-width: 580px;
+  padding: 36px;
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(6, 182, 212, 0.25);
+}
+
+.logo-main {
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, #06b6d4, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+}
+
+.logo-sub {
+  font-size: 14px;
+  letter-spacing: 3px;
+  color: #94a3b8;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #06b6d4, #0284c7);
+  color: #ffffff;
+  border: none;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+  transition: transform 0.15s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.preset-selector {
+  margin-top: 24px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-preset-launch {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid #475569;
+  color: #cbd5e1;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-preset-launch:hover {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+/* World Map Modal */
+.world-map-modal {
+  width: 92vw;
+  max-width: 1140px;
+  height: 90vh;
+  max-height: 430px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.94);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.85);
+}
+
+.world-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 20px;
+  background: rgba(30, 41, 59, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.world-map-header h2 {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: #38bdf8;
+}
+
+.world-map-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.map-sidebar {
+  width: 250px;
+  background: rgba(15, 23, 42, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  overflow-y: hidden;
+}
+
+.map-canvas-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #091d34;
+}
+
+#world-map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
