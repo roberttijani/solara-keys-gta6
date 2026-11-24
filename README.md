@@ -3,6 +3,9 @@
 > **Make GTA 6 Bounty Entry (`gta6-01`)**  
 > *100% Original 3D Open-World Crime Game built with Three.js*
 
+[![make.fun · gta6-01](https://make.fun/badge/gta6-01.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![rank](https://make.fun/badge/gta6-01/roberttijani/solara-keys-gta6/rank.svg)](https://make.fun/bounty/gta6-01/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
+[![reward](https://make.fun/badge/gta6-01/roberttijani/solara-keys-gta6/reward.svg)](https://make.fun/bounty/gta6-01?utm_source=github&utm_medium=readme&utm_campaign=gta6-01)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Execution: 100% Offline Static](https://img.shields.io/badge/Execution-100%25%20Offline%20Static-emerald.svg)](#)
 [![Payload Size: <1 MiB](https://img.shields.io/badge/Payload-0.86%20MiB-cyan.svg)](#)
